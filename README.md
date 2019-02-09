@@ -1,2 +1,2 @@
 # dictionary
-dictionary sevice on gokit
+dictionary sevice on gokit + budger
