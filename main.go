@@ -21,6 +21,9 @@ import (
 // Addr this is address our server
 var Addr = flag.String("address", ":8080", "address http server")
 
+// StorageDir it's path to dir for storage
+var StorageDir = flag.String("storage", "./storage", "path to storage dir")
+
 func main() {
 	flag.Parse()
 
@@ -41,7 +44,7 @@ func main() {
 
 	var service services.Dictionary
 	{
-		repository := word.NewBadgerRepository("./storage", logger)
+		repository := word.NewBadgerRepository(*StorageDir, logger)
 		service = services.NewDictionary(repository, logger)
 	}
 
