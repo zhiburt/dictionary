@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	pb "github.com/dictionary/proto"
+	"google.golang.org/grpc"
 
 	"github.com/dictionary/models/word"
 
@@ -20,6 +25,9 @@ import (
 
 // Addr this is address our server
 var Addr = flag.String("address", ":8080", "address http server")
+
+// AddrGRPC this is address of our grpc server
+var AddrGRPC = flag.String("gRPCaddr", ":8081", "handled address by gRPC serv")
 
 // StorageDir it's path to dir for storage
 var StorageDir = flag.String("storage", "./storage", "path to storage dir")
@@ -48,9 +56,9 @@ func main() {
 		service = services.NewDictionary(repository, logger)
 	}
 
+	endpoints := endpoints.NewEndpoints(service)
 	var h http.Handler
 	{
-		endpoints := endpoints.NewEndpoints(service)
 		h = transport.NewService(endpoints, logger)
 	}
 
@@ -71,5 +79,25 @@ func main() {
 		errsChan <- server.ListenAndServe()
 	}()
 
+	go grpcListen(errsChan, endpoints, logger)
+
 	level.Error(logger).Log("exit", <-errsChan)
+}
+
+func grpcListen(errChan chan<- error, endpoints endpoints.Endpoints, logger log.Logger) {
+	listener, err := net.Listen("tcp", *AddrGRPC)
+	if err != nil {
+		errChan <- err
+		return
+	}
+
+	srv := transport.NewGRPCService(context.Background(), endpoints)
+	grpcServ := grpc.NewServer()
+	pb.RegisterDictionaryServer(grpcServ, srv)
+
+	logger.Log("stars grpc listening")
+
+	errChan <- grpcServ.Serve(listener)
+
+	logger.Log("end grpc listening")
 }
