@@ -1,0 +1,31 @@
+syntax = "proto3";
+package pb;
+
+
+
+service Dictionary{
+    rpc AddNewWord(AddNewWordRequest) returns (AddNewWordResponce) {}
+	rpc GetByID(GetByIDRequest) returns (GetByIDResponce) {}
+}
+
+message AddNewWordRequest{
+    Word word = 1;
+}
+
+message AddNewWordResponce{
+    string id = 1;
+}
+
+message GetByIDRequest{
+    string id = 1;
+}
+
+message GetByIDResponce{
+    Word word = 1;
+}
+
+message Word{
+    string word = 1;
+    repeated string examples = 2;
+    string Transcription = 3;
+}
