@@ -22,6 +22,7 @@ var ErrWordNotFound = errors.New("Repository cannot do that you want0")
 type Repository interface {
 	AddWordInto(ctx context.Context, word Word) error
 	GetWordByID(ctx context.Context, id string) (Word, error)
+	Words(ctx context.Context) ([]Word, error)
 }
 
 // BadgerRepository is implementation Repository by Badger
@@ -46,6 +47,31 @@ func NewBadgerRepository(dir string, logger log.Logger) Repository {
 		db:     db,
 		logger: logger,
 	}
+}
+
+func (br *BadgerRepository) Words(ctx context.Context) ([]Word, error) {
+	var words []Word
+	err := br.db.View(func(txn *badger.Txn) error {
+		opts := badger.DefaultIteratorOptions
+		it := txn.NewIterator(opts)
+		defer it.Close()
+		for it.Rewind(); it.Valid(); it.Next() {
+			item := it.Item()
+			err := item.Value(func(v []byte) error {
+				w := Word{}
+				err := unmarshalWord(v, &w)
+				handleError(err)
+				words = append(words, w)
+				return nil
+			})
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	return words, err
 }
 
 // GetWordByID gets word from badger by ID
