@@ -14,6 +14,7 @@ import (
 type Dictionary interface {
 	AddNewWord(ctx context.Context, w word.Word) (string, error)
 	GetByID(ctx context.Context, id string) (word.Word, error)
+	Words(ctx context.Context) ([]word.Word, error)
 }
 
 // dictionary implements the Dictionary Service
@@ -48,6 +49,17 @@ func (d *dictionary) GetByID(ctx context.Context, id string) (word.Word, error) 
 	logger := log.With(d.logger, "method", "GetByID")
 
 	w, err := d.repository.GetWordByID(ctx, id)
+	if err != nil {
+		level.Error(logger).Log("erorr", err)
+		return w, err
+	}
+	return w, nil
+}
+
+func (d *dictionary) Words(ctx context.Context) ([]word.Word, error) {
+	logger := log.With(d.logger, "method", "GetByID")
+
+	w, err := d.repository.Words(ctx)
 	if err != nil {
 		level.Error(logger).Log("erorr", err)
 		return w, err
