@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/dictionary/services"
 	"github.com/go-kit/kit/endpoint"
@@ -11,6 +12,7 @@ import (
 type Endpoints struct {
 	AddNewWord endpoint.Endpoint
 	GetByID    endpoint.Endpoint
+	Words      endpoint.Endpoint
 }
 
 // NewEndpoints returns new object of Endpoints for service s
@@ -18,6 +20,7 @@ func NewEndpoints(s services.Dictionary) Endpoints {
 	return Endpoints{
 		AddNewWord: makeAddNewWordEndpoint(s),
 		GetByID:    makeGetByIDEndpoint(s),
+		Words:      makeWordsEndpoint(s),
 	}
 }
 
@@ -34,5 +37,16 @@ func makeGetByIDEndpoint(s services.Dictionary) endpoint.Endpoint {
 		req := request.(GetByIDRequest)
 		resp, err := s.GetByID(ctx, req.ID)
 		return GetByIDResponse{resp, err}, nil
+	}
+}
+
+func makeWordsEndpoint(s services.Dictionary) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		_, ok := request.(WordsRequest)
+		if ok {
+			resp, err := s.Words(ctx)
+			return WordsResponse{resp, err}, nil
+		}
+		return WordsResponse{nil, fmt.Errorf("doesn't have this request")}, nil
 	}
 }

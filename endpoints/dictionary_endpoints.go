@@ -23,3 +23,13 @@ type GetByIDResponse struct {
 	Word word.Word `json:"word"`
 	Err  error     `json:"error,omitempty"`
 }
+
+// WordsResponse holds the response values for the WordsResponse method.
+type WordsResponse struct {
+	Words []word.Word `json:"words"`
+	Err   error       `json:"error,omitempty"`
+}
+
+// WordsRequest holds the response values for the WordsRequest method.
+type WordsRequest struct {
+}
