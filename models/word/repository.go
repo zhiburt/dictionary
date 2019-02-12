@@ -13,12 +13,14 @@ import (
 )
 
 // ErrRepository is the default erorr in repo
-var ErrRepository = errors.New("Repository cannot do that you want0")
+var ErrRepository = errors.New("Repository cannot do that you want")
 
 // ErrWordNotFound erorr when word is not found
-var ErrWordNotFound = errors.New("Repository cannot do that you want0")
+var ErrWordNotFound = errors.New("Repository cannot has found one")
 
-// Repository wrapp db
+// ErrDublicateWord erorr when word is not found
+var ErrDublicateWord = errors.New("Repository has found the same word")
+
 type Repository interface {
 	AddWordInto(ctx context.Context, word Word) error
 	GetWordByID(ctx context.Context, id string) (Word, error)
@@ -104,6 +106,11 @@ func (br *BadgerRepository) AddWordInto(ctx context.Context, word Word) error {
 	txn := br.db.NewTransaction(true)
 	b, err := marshalWord(word)
 	handleError(err)
+
+	if ok, _ := containsWord(ctx, br, word.W); ok {
+		return ErrDublicateWord
+	}
+
 	if err = txn.Set([]byte(word.ID), b); err != nil {
 		level.Error(br.logger).Log("method", "AddWordInto")
 		return ErrRepository
@@ -114,6 +121,21 @@ func (br *BadgerRepository) AddWordInto(ctx context.Context, word Word) error {
 	}
 
 	return nil
+}
+
+func containsWord(ctx context.Context, br *BadgerRepository, w string) (bool, error) {
+	words, err := br.Words(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	for _, word := range words {
+		if word.W == w {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
 
 func marshalWord(w Word) ([]byte, error) {
