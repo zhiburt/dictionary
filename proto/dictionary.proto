@@ -2,9 +2,10 @@ syntax = "proto3";
 package pb;
 
 service Dictionary{
+	rpc Words(WordsRequest) returns (WordsResponce) {}
     rpc AddNewWord(AddNewWordRequest) returns (AddNewWordResponce) {}
 	rpc GetByID(GetByIDRequest) returns (GetByIDResponce) {}
-	rpc Words(WordsRequest) returns (WordsResponce) {}
+	rpc GetByW(GetByWRequest) returns (GetByWResponce) {}
 }
 
 message AddNewWordRequest{
@@ -15,6 +16,14 @@ message AddNewWordResponce{
     string id = 1;
 }
 
+message WordsRequest{
+    bool none = 1;
+}
+
+message WordsResponce{
+    repeated Word words = 2;
+}
+
 message GetByIDRequest{
     string id = 1;
 }
@@ -23,12 +32,12 @@ message GetByIDResponce{
     Word word = 1;
 }
 
-message WordsRequest{
-    bool none = 1;
+message GetByWRequest{
+    string w = 1;
 }
 
-message WordsResponce{
-    repeated Word words = 2;
+message GetByWResponce{
+    Word word = 1;
 }
 
 message Word{
