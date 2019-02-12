@@ -14,6 +14,7 @@ import (
 type Dictionary interface {
 	AddNewWord(ctx context.Context, w word.Word) (string, error)
 	GetByID(ctx context.Context, id string) (word.Word, error)
+	GetByW(ctx context.Context, w string) (word.Word, error)
 	Words(ctx context.Context) ([]word.Word, error)
 }
 
@@ -54,6 +55,17 @@ func (d *dictionary) GetByID(ctx context.Context, id string) (word.Word, error) 
 		return w, err
 	}
 	return w, nil
+}
+
+func (d *dictionary) GetByW(ctx context.Context, w string) (word.Word, error) {
+	logger := log.With(d.logger, "method", "GetByID")
+
+	word, err := d.repository.GetWordByW(ctx, w)
+	if err != nil {
+		level.Error(logger).Log("erorr", err)
+		return word, err
+	}
+	return word, nil
 }
 
 func (d *dictionary) Words(ctx context.Context) ([]word.Word, error) {
