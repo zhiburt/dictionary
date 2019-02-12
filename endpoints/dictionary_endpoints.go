@@ -33,3 +33,14 @@ type WordsResponse struct {
 // WordsRequest holds the response values for the WordsRequest method.
 type WordsRequest struct {
 }
+
+// GetByWRequest holds the request parameters for the GetByW method.
+type GetByWRequest struct {
+	W string
+}
+
+// GetByWResponse holds the response values for the GetByW method.
+type GetByWResponse struct {
+	Word word.Word `json:"word"`
+	Err  error     `json:"error,omitempty"`
+}
