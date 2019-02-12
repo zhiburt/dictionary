@@ -22,9 +22,10 @@ var ErrWordNotFound = errors.New("Repository cannot has found one")
 var ErrDublicateWord = errors.New("Repository has found the same word")
 
 type Repository interface {
+	Words(ctx context.Context) ([]Word, error)
 	AddWordInto(ctx context.Context, word Word) error
 	GetWordByID(ctx context.Context, id string) (Word, error)
-	Words(ctx context.Context) ([]Word, error)
+	GetWordByW(ctx context.Context, w string) (Word, error)
 }
 
 // BadgerRepository is implementation Repository by Badger
@@ -51,6 +52,8 @@ func NewBadgerRepository(dir string, logger log.Logger) Repository {
 	}
 }
 
+// Words
+// todo: refactor
 func (br *BadgerRepository) Words(ctx context.Context) ([]Word, error) {
 	var words []Word
 	err := br.db.View(func(txn *badger.Txn) error {
@@ -91,6 +94,32 @@ func (br *BadgerRepository) GetWordByID(ctx context.Context, id string) (Word, e
 		handleError(unmarshalWord(valCopy, &w))
 
 		return nil
+	})
+
+	if err != nil {
+		level.Warn(br.logger).Log("method", "GetWordByID")
+		return w, ErrWordNotFound
+	}
+
+	return w, nil
+}
+
+// GetWordByW gets word from badger by W
+func (br *BadgerRepository) GetWordByW(ctx context.Context, word string) (Word, error) {
+	w := Word{}
+	err := br.db.View(func(txn *badger.Txn) error {
+		it := txn.NewIterator(badger.DefaultIteratorOptions)
+		defer it.Close()
+		for it.Rewind(); it.Valid(); it.Next() {
+			val, err := it.Item().ValueCopy([]byte{})
+			handleError(err)
+			handleError(unmarshalWord(val, &w))
+			if w.W == word {
+				return nil
+			}
+		}
+
+		return ErrWordNotFound
 	})
 
 	if err != nil {
