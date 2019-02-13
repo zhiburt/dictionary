@@ -113,8 +113,10 @@ func (br *BadgerRepository) GetWordByW(ctx context.Context, word string) (Word, 
 		for it.Rewind(); it.Valid(); it.Next() {
 			val, err := it.Item().ValueCopy([]byte{})
 			handleError(err)
-			handleError(unmarshalWord(val, &w))
-			if w.W == word {
+			wCopy := Word{}
+			handleError(unmarshalWord(val, &wCopy))
+			if wCopy.W == word {
+				w = wCopy
 				return nil
 			}
 		}
