@@ -38,7 +38,6 @@ type BadgerRepository struct {
 
 // NewBadgerRepository creates and returns new repository
 func NewBadgerRepository(dir string, logger log.Logger) Repository {
-	badger.UseDefaultLogger()
 	opt := badger.DefaultOptions
 	opt.Dir = dir
 	opt.ValueDir = dir

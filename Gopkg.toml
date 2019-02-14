@@ -27,7 +27,7 @@
 
 [[constraint]]
   name = "github.com/dgraph-io/badger"
-  version = "1.5.4"
+  branch = "master"
 
 [[constraint]]
   name = "github.com/go-kit/kit"
