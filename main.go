@@ -24,10 +24,10 @@ import (
 )
 
 // Addr this is address our server
-var Addr = flag.String("address", ":8087", "address http server")
+var Addr = flag.String("address", ":8082", "address http server")
 
 // AddrGRPC this is address of our grpc server
-var AddrGRPC = flag.String("gRPCaddr", ":8088", "handled address by gRPC serv")
+var AddrGRPC = flag.String("gRPCaddr", ":8081", "handled address by gRPC serv")
 
 // StorageDir it's path to dir for storage
 var StorageDir = flag.String("storage", "./storage", "path to storage dir")
