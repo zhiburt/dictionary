@@ -6,6 +6,7 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/dictionary/models/word/wrapbadger"
 	"github.com/go-kit/kit/log/level"
 
 	"github.com/dgraph-io/badger"
@@ -30,7 +31,7 @@ type Repository interface {
 
 // BadgerRepository is implementation Repository by Badger
 type BadgerRepository struct {
-	db     *badger.DB
+	db     wrapbadger.DB
 	logger log.Logger
 	sync.Mutex
 }
