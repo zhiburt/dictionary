@@ -1,0 +1,16 @@
+version: "3.7"
+
+services:
+  tgbot:
+    build: tgbot/
+    environment:
+      - telegrambottoken=${telegrambottoken}
+      - chatId=${chatId}
+      - dictserviceaddr=${dictserviceaddr}
+      - openwheather=${openwheather}
+    links:
+      - service
+
+  service:
+    build: dictionary_service/
+    restart: always
