@@ -1,0 +1,4 @@
+export chatId=-1001102816482
+export openwheather='c5781e9363a95ba9aafc4d9820d99a3e'
+export telegrambottoken='503349141:AAFWEFbAnbuqOHomYYpA486qN9JEvT6ezvU'
+export dictserviceaddr='service:8081'
