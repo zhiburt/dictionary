@@ -6,7 +6,6 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/dictionary/dictionary_service/models/word/wrapbadger"
 	"github.com/go-kit/kit/log/level"
 
 	"github.com/dgraph-io/badger"
@@ -31,7 +30,7 @@ type Repository interface {
 
 // BadgerRepository is implementation Repository by Badger
 type BadgerRepository struct {
-	db     wrapbadger.DB
+	db     *badger.DB
 	logger log.Logger
 	sync.Mutex
 }
@@ -144,7 +143,7 @@ func (br *BadgerRepository) AddWordInto(ctx context.Context, word Word) error {
 
 	if err = txn.Set([]byte(word.ID), b); err != nil {
 		level.Error(br.logger).Log("method", "AddWordInto")
-		return ErrRepository
+		return err
 	}
 	if err = txn.Commit(); err != nil {
 		level.Error(br.logger).Log("method", "AddWordInto")
