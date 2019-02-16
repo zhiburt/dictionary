@@ -13,6 +13,44 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestAddWordInto(t *testing.T) {
+	testcases := []struct {
+		existWords []Word
+		word       Word
+		expected   error
+	}{
+		{
+			[]Word{
+				Word{ID: "1", W: "1"},
+				Word{ID: "2", W: "2"},
+			},
+			Word{ID: "3", W: "3"},
+			nil,
+		},
+		{
+			[]Word{
+				Word{ID: "1", W: "1"},
+			},
+			Word{ID: "2", W: "1"},
+			ErrDublicateWord,
+		},
+		{nil, Word{}, ErrRepository},
+	}
+
+	t.Run("", func(t *testing.T) {
+		for _, c := range testcases {
+			dir, err := ioutil.TempDir(".", "badger-test")
+			require.NoError(t, err)
+			defer os.RemoveAll(dir)
+			repo := confBadgerRepo(t, dir, c.existWords)
+
+			if err := repo.AddWordInto(context.Background(), c.word); c.expected != err {
+				t.Errorf("expected error %v but was\nactual %v\n", c.expected, err)
+			}
+		}
+	})
+}
+
 func TestWords(t *testing.T) {
 	testcases := []struct {
 		addedWords    []Word
