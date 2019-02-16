@@ -13,6 +13,54 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestGetWordById(t *testing.T) {
+	testcases := []struct {
+		existWords    []Word
+		id            string
+		expectedWord  Word
+		expectedError error
+	}{
+		{
+			[]Word{
+				Word{ID: "1", W: "test"},
+				Word{ID: "2", W: "2"},
+			},
+			"1",
+			Word{ID: "1", W: "test"},
+			nil,
+		},
+		{
+			[]Word{
+				Word{ID: "1", W: "test"},
+				Word{ID: "2", W: "2"},
+			},
+			"not_found_word_by_id",
+			Word{},
+			ErrWordNotFound,
+		},
+		{
+			[]Word{},
+			"not_found_word",
+			Word{},
+			ErrWordNotFound,
+		},
+	}
+
+	t.Run("", func(t *testing.T) {
+		for _, c := range testcases {
+			dir, err := ioutil.TempDir(".", "badger-test")
+			require.NoError(t, err)
+			defer os.RemoveAll(dir)
+			repo := confBadgerRepo(t, dir, c.existWords)
+
+			word, err := repo.GetWordByID(context.Background(), c.id)
+			if err != c.expectedError || !reflect.DeepEqual(word, c.expectedWord) {
+				t.Errorf("expected %v\n%v\nbut was\nactual %v\n%v", c.expectedError, c.expectedWord, err, word)
+			}
+		}
+	})
+}
+
 func TestGetWordByW(t *testing.T) {
 	testcases := []struct {
 		existWords    []Word
