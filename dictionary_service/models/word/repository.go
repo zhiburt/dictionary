@@ -143,7 +143,7 @@ func (br *BadgerRepository) AddWordInto(ctx context.Context, word Word) error {
 
 	if err = txn.Set([]byte(word.ID), b); err != nil {
 		level.Error(br.logger).Log("method", "AddWordInto")
-		return err
+		return ErrRepository
 	}
 	if err = txn.Commit(); err != nil {
 		level.Error(br.logger).Log("method", "AddWordInto")
