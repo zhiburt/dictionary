@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/dictionary/tgbot/commands"
 	"github.com/dictionary/tgbot/wheather"
@@ -50,7 +51,8 @@ func main() {
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-	SendTodayWheterToChat(bot)
+	callAt(17, 41, 20, func() { SendTodayWheterToChat(bot) })
+	callAt(6, 11, 0, func() { SendTodayWheterToChat(bot) })
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
@@ -90,6 +92,32 @@ func handleCommand(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, reply)
 	msg.ReplyToMessageID = update.Message.MessageID
 	bot.Send(msg)
+}
+
+func callAt(hour, min, sec int, f func()) error {
+	loc, err := time.LoadLocation("Local")
+	if err != nil {
+		return err
+	}
+
+	now := time.Now().Local()
+	firstCallTime := time.Date(
+		now.Year(), now.Month(), now.Day(), hour, min, sec, 0, loc)
+	if firstCallTime.Before(now) {
+		firstCallTime = firstCallTime.Add(time.Hour * 24)
+	}
+
+	duration := firstCallTime.Sub(time.Now().Local())
+
+	go func() {
+		time.Sleep(duration)
+		for {
+			f()
+			time.Sleep(time.Hour * 24)
+		}
+	}()
+
+	return nil
 }
 
 // SendTodayWheterToChat gets the wheather today
