@@ -1,5 +1,15 @@
-# dictionary
-## This is project on go-kit + budger and tgbot this is telegram bot
+# dictionary is tgbot has been code on `go-kit` + `budger`
+
+
+That's telegram bot which seems the public dictionary
+
+Contributing in learning English
+
+* Features
+- add world
++ get random word list
+- confuse some words
+
 ### There're some examples below what you can do with this bot
 
 You can add some word to dict.
