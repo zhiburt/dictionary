@@ -1,3 +1,6 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/zhiburt/dictionary)](https://goreportcard.com/report/github.com/zhiburt/dictionary)
+[![GoDoc](https://godoc.org/github.com/zhiburt/dictionary?status.svg)](https://godoc.org/github.com/zhiburt/dictionary)
+
 # dictionary is tgbot has been code on `go-kit` + `budger`
 
 
